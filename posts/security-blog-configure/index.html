@@ -1,0 +1,553 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+  <!-- 元数据 -->
+  <meta charset="utf-8">
+  <link rel="icon" href="/images/MW.png">
+  
+  <title>Some simple security configuration I made for Mr.W&#39;s Blog | Mr.W&#39;s Blog</title>
+  <meta name="author" content="Mr.W" />
+  <meta http-equiv="Cache-Control" content="no-transform" />
+  <meta http-equiv="Cache-Control" content="no-siteapp" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="robots" content="index,follow" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+  <meta name="format-detection" content="telphone=no, email=no" />
+  
+    <meta name="keywords" content="linux, network, nginx, shell" />
+  
+  <meta name="description" content="Because the server I use don’t have DDOS protection, also becasue the sensitive contents I display may draw the attention of my government, the safety measures are required.Thus,to agianst the foresee">
+<meta property="og:type" content="article">
+<meta property="og:title" content="Some simple security configuration I made for Mr.W&#39;s Blog">
+<meta property="og:url" content="https://gdmrw.github.io/posts/security-blog-configure/index.html">
+<meta property="og:site_name" content="Mr.W&#39;s Blog">
+<meta property="og:description" content="Because the server I use don’t have DDOS protection, also becasue the sensitive contents I display may draw the attention of my government, the safety measures are required.Thus,to agianst the foresee">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://gdmrw.github.io/posts/security-blog-configure/cloudflare.png">
+<meta property="article:published_time" content="2022-10-18T07:38:15.000Z">
+<meta property="article:modified_time" content="2022-10-21T04:32:41.400Z">
+<meta property="article:author" content="Mr.W">
+<meta property="article:tag" content="shell">
+<meta property="article:tag" content="nginx">
+<meta property="article:tag" content="linux">
+<meta property="article:tag" content="network">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://gdmrw.github.io/posts/security-blog-configure/cloudflare.png">
+  
+  <!-- 站点验证相关 -->
+  
+    
+    
+    
+  
+  <!-- 样式表文件 -->
+  <link rel="stylesheet" id="kratos-css" href="/css/kratosr.min.css" media="all"></script>
+  
+    <link rel="stylesheet" id="darkmode-css" href="/css/kr-color-dark.min.css" media="(prefers-color-scheme: dark)"></script>
+    <script src="/js/kr-dark.min.js"></script>
+  
+  
+    <link rel="stylesheet" id="highlight-css" href="/css/highlight/night-eighties.min.css" media="all"></script>
+  
+  
+  <link rel="stylesheet" id="fontawe-css" href="/vendors/font-awesome@4.7.0/css/font-awesome.min.css" media="all"></script>
+  <link rel="stylesheet" id="nprogress-css" href="/vendors/nprogress@0.2.0/nprogress.css" media="all"></script>
+  
+  
+  
+    <link rel="stylesheet" href="/vendors/@fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.css"></script>
+  
+  <!-- 不得不预先加载的一些JS文件 -->
+  <script src="/vendors/jquery@3.6.0/dist/jquery.min.js"></script>
+  
+  
+  <style>
+    
+      .kratos-cover.kratos-cover-2 {
+        background-image: url('/images/carina_nebula_orig.png');
+      }
+    
+    
+      @media(min-width:768px) {
+        body.custom-background {
+          background-image: url('/images/bg.webp');
+        }
+      }
+    
+  </style>
+  
+<meta name="generator" content="Hexo 6.3.0"></head>
+
+
+    <body class="custom-background">
+        <div id="kratos-wrapper">
+    <div id="kratos-page">
+        <div id="kratos-header">
+            <header id="kratos-desktop-topnav" class="kratos-topnav">
+                <div class="container">
+                    <div class="nav-header">
+                        <nav id="kratos-menu-wrap">
+                            <ul id="kratos-primary-menu" class="sf-menu">
+                                
+                                    
+                                        <li>
+                                            
+                                                <a href="/">
+                                            
+                                                
+                                                    <i class="fa fa-home"></i>
+                                                
+                                                Home
+                                            </a>
+                                            
+                                        </li>
+                                    
+                                        <li>
+                                            
+                                                <a href="/archives/">
+                                            
+                                                
+                                                    <i class="fa fa-file"></i>
+                                                
+                                                Archives
+                                            </a>
+                                            
+                                        </li>
+                                    
+                                        <li>
+                                            
+                                                <a href="/about/">
+                                            
+                                                
+                                                    <i class="fa fa-paper-plane"></i>
+                                                
+                                                About Me
+                                            </a>
+                                            
+                                        </li>
+                                    
+                                
+                            </ul>
+                        </nav>
+                    </div>
+                </div>
+            </header>
+            <header id="kratos-mobile-topnav" class="kratos-topnav">
+                <div class="container">
+                    <div class="color-logo"><a href="/">Mr.W&#39;s Blog</a></div>
+                    <div class="nav-toggle">
+                        <a class="kratos-nav-toggle js-kratos-nav-toggle">
+                            <i></i>
+                        </a>
+                    </div>
+                </div>
+            </header>
+        </div>
+        <div class="kratos-start kratos-hero-2">
+            <!-- <div class="kratos-overlay"></div> -->
+            <div class="kratos-cover kratos-cover-2 text-center">
+                <div class="desc desc2 animate-box">
+                    <a href="/">
+                        <h2>Mr.W&#39;s Blog</h2> <br />
+                        <span></span>
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <div id="kratos-blog-post">
+            <div class="container">
+                <div id="main" class="row">
+                    
+
+        
+
+            <section class="col-md-8">
+
+        
+
+            <article itemscope itemtype="https://schema.org/Article">
+    
+    <link itemprop="mainEntityOfPage" href="https://gdmrw.github.io/posts/security-blog-configure/">
+    <div class="kratos-hentry kratos-post-inner clearfix">
+        <header class="kratos-entry-header">
+            
+                <h1 class="kratos-entry-title text-center" itemprop="name headline">Some simple security configuration I made for Mr.W's Blog</h1>
+            
+            
+            <ul class="kratos-post-meta text-center">
+                <li><time datetime="2022-10-18T07:38:15.000Z" itemprop="datePublished"><i class="fa fa-calendar"></i> 2022-10-18</time></li>
+                <li itemprop="author" itemscope itemtype="https://schema.org/Person">
+                    <i class="fa fa-user"></i> author <span itemprop="name">Mr.W</span>
+                </li>
+                <li>
+                    <i class="fa fa-edit"></i> 
+                    
+                    
+                        ~6.14K
+                    
+                    words
+                </li>
+                
+            </ul>
+        </header>
+        <div class="kratos-post-content">
+            
+            <div id="expire-alert" class="alert alert-warning hidden" role="alert">
+                <div class="icon"><i class="fa fa-warning"></i></div>
+                <div class="text"><p>This article was last editied in <time datetime="1666326761400"></time>, some of its contents may need update.</p></div>
+            </div>
+            
+            
+            
+                <div class="kratos-post-inner-toc toc-div-class" >
+                    <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#Cloudflare-part"><span class="toc-number">1.</span> <span class="toc-text">Cloudflare part</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#Enable-CDN"><span class="toc-number">1.1.</span> <span class="toc-text">Enable CDN</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#SSL-x2F-TLS-HTTPS"><span class="toc-number">1.2.</span> <span class="toc-text">SSL&#x2F;TLS, HTTPS</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Download-Cloudflare-certificate-in-order-to-support-authenticated-origin-pull-function"><span class="toc-number">1.3.</span> <span class="toc-text">Download Cloudflare certificate in order to support authenticated origin pull function</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Server-part"><span class="toc-number">2.</span> <span class="toc-text">Server part</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#Host"><span class="toc-number">2.1.</span> <span class="toc-text">Host</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#Change-your-password"><span class="toc-number">2.1.1.</span> <span class="toc-text">Change your password</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#Using-SSH-keygen-generate-key-pair-and-activate"><span class="toc-number">2.1.2.</span> <span class="toc-text">Using SSH-keygen generate key-pair and activate</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#Allow-Pubkey-authentication"><span class="toc-number">2.1.3.</span> <span class="toc-text">Allow Pubkey authentication</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#Change-the-ssh-port"><span class="toc-number">2.1.4.</span> <span class="toc-text">Change the ssh port</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#Reject-Password-auth-optional"><span class="toc-number">2.1.5.</span> <span class="toc-text">Reject Password auth(optional)</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Nginx-config"><span class="toc-number">2.2.</span> <span class="toc-text">Nginx config</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#Force-redirect-http-request-to-https-301"><span class="toc-number">2.2.1.</span> <span class="toc-text">Force redirect http request to https (301)</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#Certificate"><span class="toc-number">2.2.2.</span> <span class="toc-text">Certificate</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#Reject-insecure-handshake"><span class="toc-number">2.2.3.</span> <span class="toc-text">Reject insecure handshake</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#Origin-pull-certificate"><span class="toc-number">2.2.4.</span> <span class="toc-text">Origin pull certificate</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#Block-all-connection-of-specific-country-403-optional"><span class="toc-number">2.2.5.</span> <span class="toc-text">Block all connection of specific country (403) (optional)</span></a></li></ol></li></ol></li></ol>
+                </div>
+            
+            <hr />
+            <div itemprop="articleBody"><p>Because the server I use don’t have DDOS protection, also becasue the sensitive contents I display may draw the attention of my government, the safety measures are required.Thus,to agianst the foreseeable DDOS&#x2F;CC attacks and private information sniffings, I made some simple security configurations on my server. It’s pretty easy to achieve, but effect will be powerful. </p>
+<h2 id="Cloudflare-part"><a href="#Cloudflare-part" class="headerlink" title="Cloudflare part"></a>Cloudflare part</h2><p><a target="_blank" rel="noopener" href="https://www.cloudflare.com/">Cloudflare</a> helps me a lot. It provide free DDOS protection and free DNS, CDN service, whcih help me get tons of advanced protection at almost no cost. Cloudflare is one of the most extraordinary web service provider i ever seen. If you are affordable to pay for there monthly plans, you will obtain more comprehensive protections. </p>
+<h3 id="Enable-CDN"><a href="#Enable-CDN" class="headerlink" title="Enable CDN"></a>Enable CDN</h3><p>Back to topic, first you need to enter your site page’s DNS section, resolve your domain name to your server ip, then enable CDN by turning the grey cloud into orange. I prtend you know how to add your domain into clodflare, if you feel not sure about that, visit <a target="_blank" rel="noopener" href="https://developers.cloudflare.com/fundamentals/get-started/setup/add-site/">here</a>.<br><img src="/images/Cloudflare/cloudflareCDN.png" title="Cloudflare CDN"><br>Apart from helping you to hide your server ip, CDN can also speed up your website http respond speed. Overall, there is no reason not to use this service when you are a website builder. </p>
+<h3 id="SSL-x2F-TLS-HTTPS"><a href="#SSL-x2F-TLS-HTTPS" class="headerlink" title="SSL&#x2F;TLS, HTTPS"></a>SSL&#x2F;TLS, HTTPS</h3><p>Next, we need to apply a TLS cert to establish https connection. By etablishing the TLS handshake, we can encrypt the traffic flow and increase the cost of MITM attack. Originally, we want to to obtain an eligible certificate we need to pay a lot of money for certificate providers such as Digicert, Globalsign . But thanks to the great Let’s Encrypt project, we can now easily obtain a TLS certificate without any cost. Today i will show you how to easily apply the certificate through Cloudflare. </p>
+<div class="alert alert-warning"><div class="icon"><i class="fa fa-warning"></i></div><div class="text"><p>The certificate Cloudflare provided is usable only when the CDN service is activated. If you don’t use Cloudflare’s CDN service, please use ACME.sh script to generate it in Shell. I will make a tutoral about ACME later.</p>
+</div></div>
+<p>In the Cloudflare web control panel, Click SSL&#x2F;TLS, in the overview section, switch the encryption mode to <strong>strict(full)</strong>.<br><img src="/images/Cloudflare/CloudflareTLS.png"><br>Next, go to the Origin Server section, enable the <strong>authenticated origin pulls</strong>, then click <strong>create certificate</strong>.<br><img src="/images/Cloudflare/TLS1.webp"><br>Change the key type to ECC, select the certificate validity to 15 years, then click <strong>create</strong>.<br><img src="/images/Cloudflare/TLS2.webp"><br>If you want know why use ECC rather than RSA, plase check the table below. Overall, ECC has advantages over RSA , and if you don’t have the compability demands, the ECC&#x2F;ECDSA will always be your first choice. </p>
+<div class="xControl">
+    <div class="xHeading"><div class="xIcon"><i class="fa fa-plus"></i></div><span>Different_between_ECC_and_RSA</span></div>
+    <div class="xContent"><div class="inner">
+        <div> 
+<table >
+  <tr>
+    <th>Algorithm</th>
+    <th>ECC</th>
+    <th>RSA</th>
+  </tr>
+  <tr>
+    <th>Key length</th>
+    <td>Generally use 256-bit encryption length <br> (equivalent to RSA 3072-bit)</td>
+    <td>Generally use 2048-bit encryption length</td>
+  </tr>
+  <tr>
+    <th>CPU usage</th>
+    <td>Low</td>
+    <td>High</td>
+  </tr>
+  <tr>
+    <th>RAM usage</th>
+    <td>Low</td>
+    <td>High</td>
+  </tr>
+  <tr>
+    <th>Network consumption</th>
+    <td>Low</td>
+    <td>High</td>
+  </tr>
+  <tr>
+    <th>Encryption spped </th>
+    <td>Faster</td>
+    <td>Slower</td>
+  </tr>
+  <tr>
+    <th>Crack difficulty</th>
+    <td>Has mathematical properties, exponential level</td>
+    <td>Sub-exponential level</td>
+  </tr>
+  <tr>
+    <th>Anti-attack</th>
+    <td>Strong</td>
+    <td>Weak</td>
+  </tr>
+  <tr>
+    <th>Scalability</th>
+    <td>High, lesser length more scalability</td>
+    <td>Low</td>
+  </tr>
+</table>
+</div> 
+    </div></div>
+    </div>
+
+<p>Copy the <strong>contents</strong> of the original certificate and private key, put it into a pem file and key file each. (A simple way to do it in Windows environment is to copy the contents of OC and private key contents into TXT file, and change the suffix to .pem and .key – for example: pub_key.pem, private_key.key) . Click OK.<br><img src="/images/Cloudflare/TLS3.webp"></p>
+<h3 id="Download-Cloudflare-certificate-in-order-to-support-authenticated-origin-pull-function"><a href="#Download-Cloudflare-certificate-in-order-to-support-authenticated-origin-pull-function" class="headerlink" title="Download Cloudflare certificate in order to support authenticated origin pull function"></a><span id="1">Download Cloudflare certificate in order to support authenticated origin pull function</span></h3><p><a target="_blank" rel="noopener" href="https://developers.cloudflare.com/ssl/static/authenticated_origin_pull_ca.pem">Download the .PEM file</a> of cloudflare client certificat(the link is intergrated in the fonts). If there is no other accident, you will get a file name authenticated_origin_pull_ca.pem, keep it and we will use it later.</p>
+<h2 id="Server-part"><a href="#Server-part" class="headerlink" title="Server part"></a>Server part</h2><p>Server part config mainly focus on nginx and host itself. </p>
+<h3 id="Host"><a href="#Host" class="headerlink" title="Host"></a>Host</h3><h4 id="Change-your-password"><a href="#Change-your-password" class="headerlink" title="Change your password"></a>Change your password</h4><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo passwd</span><br></pre></td></tr></table></figure>
+<h4 id="Using-SSH-keygen-generate-key-pair-and-activate"><a href="#Using-SSH-keygen-generate-key-pair-and-activate" class="headerlink" title="Using SSH-keygen generate key-pair and activate"></a>Using SSH-keygen generate key-pair and activate</h4><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">sudo ssh-keygen -t ed25519</span><br></pre></td></tr></table></figure>
+<p>You can define where to save the key file(I suggest that to keep the default setting) and wether a extra passphrase needed.<br>You have <strong>2 options</strong> to activate the key. </p>
+<figure class="highlight plaintext"><figcaption><span>Official_version</span></figcaption><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">ssh-copy-id -i ~/.ssh/mykey user@host</span><br></pre></td></tr></table></figure>
+<figure class="highlight plaintext"><figcaption><span>Personal_version</span></figcaption><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">cat id_ed25519.pub &gt;&gt; ~/.ssh/authorized_keys</span><br></pre></td></tr></table></figure>
+<h4 id="Allow-Pubkey-authentication"><a href="#Allow-Pubkey-authentication" class="headerlink" title="Allow Pubkey authentication"></a>Allow Pubkey authentication</h4><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">vim /etc/ssh/sshd_config</span><br></pre></td></tr></table></figure>
+<p><strong>Delete annotation mark “mark” (if you see it appear in front of the text)</strong>, change <code>PubkeyAuthentication</code> to <code>yes</code>.<br>Type <code>:wq</code> to quit and save.</p>
+<h4 id="Change-the-ssh-port"><a href="#Change-the-ssh-port" class="headerlink" title="Change the ssh port"></a>Change the ssh port</h4><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">vim /etc/ssh/sshd_config</span><br></pre></td></tr></table></figure>
+<p>change port <code>22</code> to any port over <code>1024</code><br>Type <code>:wq</code> to quit and save.</p>
+<h4 id="Reject-Password-auth-optional"><a href="#Reject-Password-auth-optional" class="headerlink" title="Reject Password auth(optional)"></a>Reject Password auth(optional)</h4><div class="alert alert-warning"><div class="icon"><i class="fa fa-warning"></i></div><div class="text"><p>Please make sure you can access to your server successfully through pub key before make this change</p>
+</div></div>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">vim /etc/ssh/sshd_config</span><br></pre></td></tr></table></figure>
+<p>Change <code>PasswordAuthentication</code> to <code>no</code><br>Type <code>:wq</code> to quit and save.</p>
+<h3 id="Nginx-config"><a href="#Nginx-config" class="headerlink" title="Nginx config"></a>Nginx config</h3><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br></pre></td><td class="code"><pre><span class="line">vim /etc/nginx/nginx.conf</span><br></pre></td></tr></table></figure>
+<h4 id="Force-redirect-http-request-to-https-301"><a href="#Force-redirect-http-request-to-https-301" class="headerlink" title="Force redirect http request to https (301)"></a>Force redirect http request to https (301)</h4><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br></pre></td><td class="code"><pre><span class="line">server &#123;</span><br><span class="line">   listen 80;</span><br><span class="line">   listen [::]:80;</span><br><span class="line">   server_name yourwebsite.com www.yourwebsite.com *.yourwebsite.com;</span><br><span class="line">   rewrite ^(.*)$ https://$&#123;server_name&#125;$1 permanent;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h4 id="Certificate"><a href="#Certificate" class="headerlink" title="Certificate"></a>Certificate</h4><p>Add the previous applied certificate into Nginx.<br>Upload the pem and key file in any path of the server, for example: <code>/home/website/pub_key.pem</code><br>chnage these 2 lines.</p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">ssl_certificate       /home/website/pub_key.pem</span><br><span class="line">ssl_certificate_key   /home/website/private_key.key</span><br></pre></td></tr></table></figure>
+
+<h4 id="Reject-insecure-handshake"><a href="#Reject-insecure-handshake" class="headerlink" title="Reject insecure handshake"></a>Reject insecure handshake</h4><figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br></pre></td><td class="code"><pre><span class="line">server &#123;</span><br><span class="line">listen               443 ssl default_server;</span><br><span class="line">ssl_reject_handshake on;</span><br><span class="line">&#125;</span><br></pre></td></tr></table></figure>
+
+<h4 id="Origin-pull-certificate"><a href="#Origin-pull-certificate" class="headerlink" title="Origin pull certificate"></a>Origin pull certificate</h4><p>Upload the cloudflare origin pull certificate to server, move back to <a href="#1">cloudflare part</a> you will find the download address of certificate. For example: <code>/home/website/cloudflare/authenticated_origin_pull_ca.pem</code></p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br></pre></td><td class="code"><pre><span class="line">ssl_client_certificate /home/website/cloudflare/authenticated_origin_pull_ca.pem;</span><br><span class="line">ssl_verify_client on;</span><br></pre></td></tr></table></figure>
+
+<h4 id="Block-all-connection-of-specific-country-403-optional"><a href="#Block-all-connection-of-specific-country-403-optional" class="headerlink" title="Block all connection of specific country (403) (optional)"></a>Block all connection of specific country (403) (optional)</h4><p>I do this becuase I don’t want the <span class="blur">GFW</span> detect me, it can also be treat as a measure of DDOS protection.<br>I use China as an example, if you want to change the country, plase notice that the country code follow the rule of <strong>two-letter ISO3166-1</strong> . </p>
+<figure class="highlight plaintext"><table><tr><td class="gutter"><pre><span class="line">1</span><br><span class="line">2</span><br><span class="line">3</span><br><span class="line">4</span><br><span class="line">5</span><br><span class="line">6</span><br><span class="line">7</span><br></pre></td><td class="code"><pre><span class="line"> map $http_cf_ipcountry $allow &#123;</span><br><span class="line">    default yes;</span><br><span class="line">    CN no;</span><br><span class="line">    &#125;</span><br><span class="line">if ($allow = no) &#123;</span><br><span class="line">    return 403;</span><br><span class="line">    &#125;</span><br></pre></td></tr></table></figure>
+</div>
+        </div>
+        
+        <footer class="kratos-entry-footer clearfix">
+            
+            <div class="footer-tag clearfix">
+                <div class="pull-left">
+                <i class="fa fa-tags"></i>
+                    <a class="tag-none-link" href="/tags/linux/" rel="tag">linux</a>, <a class="tag-none-link" href="/tags/network/" rel="tag">network</a>, <a class="tag-none-link" href="/tags/nginx/" rel="tag">nginx</a>, <a class="tag-none-link" href="/tags/shell/" rel="tag">shell</a>
+                </div>
+                <div class="pull-date">
+                    <time datetime="2022-10-21T04:32:41.400Z" itemprop="dateModified">last modify2022-10-21</time>
+                </div>
+            </div>
+        </footer>
+    </div>
+    
+        <nav class="navigation post-navigation clearfix" role="navigation">
+            
+            <div class="nav-previous clearfix">
+                <a title=" Function Test" href="/posts/function-test/">&lt; Previous</a>
+            </div>
+            
+            
+            <div class="nav-next clearfix">
+                <a title=" Nginx pid error fix" href="/posts/nginx-pid-error/">Next &gt;</a>
+            </div>
+            
+        </nav>
+    
+    
+</article>
+
+        
+
+            </section>
+
+        
+
+                
+            
+
+<section id="kratos-widget-area" class="col-md-4 hidden-xs hidden-sm">
+    <!-- 文章和页面根据splitter来分割，没有的话就从头开始设置为sticky -->
+    
+    
+                <aside id="krw-about" class="widget widget-kratos-about clearfix">
+    <div class="photo-background"></div>
+    <div class="photo-wrapper clearfix">
+        <div class="photo-wrapper-tip text-center">
+            <img class="about-photo" src="/images/MW.png" loading="lazy" decoding="auto" />
+        </div>
+    </div>
+    <div class="textwidget">
+        <p class="text-center">Across the Great Wall, <br /> we can reach every coner in the world </p></p>
+    </div>
+    <div class="site-meta">
+        <a class="meta-item" href="/archives/">
+            <span class="title">
+                post
+            </span>
+            <span class="count">
+                7
+            </span>
+        </a>
+        <a class="meta-item" href="/categories/">
+            <span class="title">
+                category
+            </span>
+            <span class="count">
+                1
+            </span>
+        </a>
+        <a class="meta-item" href="/tags/">
+            <span class="title">
+                tag
+            </span>
+            <span class="count">
+                6
+            </span>
+        </a>
+    </div>
+</aside>
+            
+                    <div class="sticky-area">
+                
+                    <aside id="krw-toc" class="widget widget-kratos-toc clearfix toc-div-class" >
+    <div class="photo-background"></div>
+    <h4 class="widget-title no-after">
+        <i class="fa fa-compass"></i>
+        article catalog
+        <span class="toc-progress-bar" role="progressbar" aria-label="阅读进度："></span>
+    </h4>
+    <div class="textwidget">
+        <ol class="toc"><li class="toc-item toc-level-2"><a class="toc-link" href="#Cloudflare-part"><span class="toc-text">Cloudflare part</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#Enable-CDN"><span class="toc-text">Enable CDN</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#SSL-x2F-TLS-HTTPS"><span class="toc-text">SSL&#x2F;TLS, HTTPS</span></a></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Download-Cloudflare-certificate-in-order-to-support-authenticated-origin-pull-function"><span class="toc-text">Download Cloudflare certificate in order to support authenticated origin pull function</span></a></li></ol></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Server-part"><span class="toc-text">Server part</span></a><ol class="toc-child"><li class="toc-item toc-level-3"><a class="toc-link" href="#Host"><span class="toc-text">Host</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#Change-your-password"><span class="toc-text">Change your password</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#Using-SSH-keygen-generate-key-pair-and-activate"><span class="toc-text">Using SSH-keygen generate key-pair and activate</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#Allow-Pubkey-authentication"><span class="toc-text">Allow Pubkey authentication</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#Change-the-ssh-port"><span class="toc-text">Change the ssh port</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#Reject-Password-auth-optional"><span class="toc-text">Reject Password auth(optional)</span></a></li></ol></li><li class="toc-item toc-level-3"><a class="toc-link" href="#Nginx-config"><span class="toc-text">Nginx config</span></a><ol class="toc-child"><li class="toc-item toc-level-4"><a class="toc-link" href="#Force-redirect-http-request-to-https-301"><span class="toc-text">Force redirect http request to https (301)</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#Certificate"><span class="toc-text">Certificate</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#Reject-insecure-handshake"><span class="toc-text">Reject insecure handshake</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#Origin-pull-certificate"><span class="toc-text">Origin pull certificate</span></a></li><li class="toc-item toc-level-4"><a class="toc-link" href="#Block-all-connection-of-specific-country-403-optional"><span class="toc-text">Block all connection of specific country (403) (optional)</span></a></li></ol></li></ol></li></ol>
+    </div>
+</aside>
+                
+                
+  <aside id="krw-categories" class="widget widget-kratos-categories clearfix">
+    <h4 class="widget-title"><i class="fa fa-folder"></i>Categories list</h4>
+      <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/Tutorial/">Tutorial</a><span class="category-list-count">1</span></li></ul>
+  </aside>
+
+
+            
+                
+  <aside id="krw-tags" class="widget widget-kratos-tags clearfix">
+    <h4 class="widget-title"><i class="fa fa-tags"></i>tagcloud</h4>
+      <div class="tag-clouds">
+        <a href="/tags/http/" style="font-size: 0.6em;">http</a> <a href="/tags/linux/" style="font-size: 0.8em;">linux</a> <a href="/tags/network/" style="font-size: 0.6em;">network</a> <a href="/tags/nginx/" style="font-size: 0.8em;">nginx</a> <a href="/tags/shell/" style="font-size: 0.8em;">shell</a> <a href="/tags/tls/" style="font-size: 0.6em;">tls</a>
+      </div>
+  </aside>
+
+            
+                
+  <aside id="krw-posts" class="widget widget-kratos-posts">
+  <h4 class="widget-title"><i class="fa fa-file"></i>Recent post</h4>
+  <div class="tab-content">
+      <ul class="list-group">
+        
+        
+          
+          
+            <a class="list-group-item" href="/posts/failure/"><i class="fa  fa-book"></i> Failure</a>
+            
+          
+        
+          
+          
+            <a class="list-group-item" href="/posts/middlebox-traffic-analysis/"><i class="fa  fa-book"></i> How Middleboxs Identify Proxy Traffics</a>
+            
+          
+        
+          
+          
+            <a class="list-group-item" href="/posts/nginx-pid-error/"><i class="fa  fa-book"></i> Nginx pid error fix</a>
+            
+          
+        
+          
+          
+            <a class="list-group-item" href="/posts/security-blog-configure/"><i class="fa  fa-book"></i> Some simple security configuration I made for Mr.W's Blog</a>
+            
+          
+        
+          
+          
+            <a class="list-group-item" href="/posts/function-test/"><i class="fa  fa-book"></i> Function Test</a>
+            
+          
+        
+          
+            
+          
+            
+      </ul>
+  </div>
+  </aside>
+
+            
+    </div>
+</section>
+        
+        </div>
+    </div>
+</div>
+<footer>
+    <div id="footer"  >
+        <div class="container">
+            <div class="row">
+                <div class="col-md-6 col-md-offset-3 footer-list text-center">
+                    <ul class="kratos-social-icons">
+                        
+                        <li><a href="mailto:gdmr_w@outlook.com"><i class="fa fa-envelope"></i></a></li>
+                        
+                        
+                        
+                        
+                        
+                        <li><a target="_blank" rel="nofollow" href="https://github.com/gdmrw"><i class="fa fa-github"></i></a></li>
+                        
+                    </ul>
+                    <ul class="kratos-copyright">
+
+                        <div>
+                            <li>Thanks <a href="https://github.com/Candinya/Kratos-Rebirth" target="_blank">Kratos Theme</a></li>
+                            
+                        </div>
+                        <div>
+                            <li>Powered by <a href="https://hexo.io" target="_blank" rel="nofollow">Hexo</a></li>
+                            <li>Hosted on <a href="https://github.io" target="_blank">Github Pages</a></li>
+                        </div>
+                        <div>
+                            
+                            
+                        </div>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <div class="kr-tool text-center">
+            <div class="tool">
+                
+                    <div class="box search-box">
+                        <a href="/search/">
+                            <span class="fa fa-search"></span>
+                        </a>
+                    </div>
+                
+                
+                    <div class="box theme-box" id="darkmode-switch">
+                        <span class="fa fa-adjust"></span>
+                    </div>
+                
+                
+            </div>
+            <div class="box gotop-box">
+                <span class="fa fa-chevron-up"></span>
+            </div>
+        </div>
+    </div>
+</footer>
+</div>
+</div>
+
+        <script defer src="/vendors/bootstrap@3.3.4/dist/js/bootstrap.min.js"></script>
+<script defer src="/vendors/nprogress@0.2.0/nprogress.js"></script>
+<script>
+    if (!window.kr) {
+        window.kr = {};
+    }
+    window.kr.notMobile = (!(navigator.userAgent.match(/(phone|pad|pod|iPhone|iPod|ios|iPad|Android|Mobile|BlackBerry|IEMobile|MQQBrowser|JUC|Fennec|wOSBrowser|BrowserNG|WebOS|Symbian|Windows Phone)/i)));
+    window.kr.siteRoot = "/";
+</script>
+
+
+    <script async src="/js/false.min.js"></script>
+
+
+
+
+    <script defer src="/vendors/@fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.js"></script>
+
+<script defer src="/vendors/clipboard@2.0.6/dist/clipboard.min.js"></script>
+<script defer src="/js/kratosr.min.js"></script>
+<script defer src="/js/pjax.min.js"></script>
+
+
+
+<!-- Extra support for third-party plguins  -->
+
+
+    </body>
+</html>

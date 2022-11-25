@@ -1,0 +1,536 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+  <!-- 元数据 -->
+  <meta charset="utf-8">
+  <link rel="icon" href="/images/MW.png">
+  
+  <title>How Middleboxs Identify Proxy Traffics | Mr.W&#39;s Blog</title>
+  <meta name="author" content="Mr.W" />
+  <meta http-equiv="Cache-Control" content="no-transform" />
+  <meta http-equiv="Cache-Control" content="no-siteapp" />
+  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+  <meta name="robots" content="index,follow" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
+  <meta name="format-detection" content="telphone=no, email=no" />
+  
+    <meta name="keywords" content="http, tls" />
+  
+  <meta name="description" content="AbstractThere is no absolute safe disguise, all protocols have risks of detected.  Common attack made by middle box Passive analysis (Traffic characteristic, PoC vulnerability)Usually use for plain te">
+<meta property="og:type" content="article">
+<meta property="og:title" content="How Middleboxs Identify Proxy Traffics">
+<meta property="og:url" content="https://gdmrw.github.io/posts/middlebox-traffic-analysis/index.html">
+<meta property="og:site_name" content="Mr.W&#39;s Blog">
+<meta property="og:description" content="AbstractThere is no absolute safe disguise, all protocols have risks of detected.  Common attack made by middle box Passive analysis (Traffic characteristic, PoC vulnerability)Usually use for plain te">
+<meta property="og:locale" content="en_US">
+<meta property="og:image" content="https://gdmrw.github.io/images/MW.png">
+<meta property="article:published_time" content="2022-10-22T15:36:11.000Z">
+<meta property="article:modified_time" content="2022-10-23T05:21:06.427Z">
+<meta property="article:author" content="Mr.W">
+<meta property="article:tag" content="http">
+<meta property="article:tag" content="tls">
+<meta name="twitter:card" content="summary">
+<meta name="twitter:image" content="https://gdmrw.github.io/images/MW.png">
+  
+  <!-- 站点验证相关 -->
+  
+    
+    
+    
+  
+  <!-- 样式表文件 -->
+  <link rel="stylesheet" id="kratos-css" href="/css/kratosr.min.css" media="all"></script>
+  
+    <link rel="stylesheet" id="darkmode-css" href="/css/kr-color-dark.min.css" media="(prefers-color-scheme: dark)"></script>
+    <script src="/js/kr-dark.min.js"></script>
+  
+  
+    <link rel="stylesheet" id="highlight-css" href="/css/highlight/night-eighties.min.css" media="all"></script>
+  
+  
+  <link rel="stylesheet" id="fontawe-css" href="/vendors/font-awesome@4.7.0/css/font-awesome.min.css" media="all"></script>
+  <link rel="stylesheet" id="nprogress-css" href="/vendors/nprogress@0.2.0/nprogress.css" media="all"></script>
+  
+  
+  
+    <link rel="stylesheet" href="/vendors/@fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.css"></script>
+  
+  <!-- 不得不预先加载的一些JS文件 -->
+  <script src="/vendors/jquery@3.6.0/dist/jquery.min.js"></script>
+  
+  
+  <style>
+    
+      .kratos-cover.kratos-cover-2 {
+        background-image: url('/images/carina_nebula_orig.png');
+      }
+    
+    
+      @media(min-width:768px) {
+        body.custom-background {
+          background-image: url('/images/bg.webp');
+        }
+      }
+    
+  </style>
+  
+<meta name="generator" content="Hexo 6.3.0"></head>
+
+
+    <body class="custom-background">
+        <div id="kratos-wrapper">
+    <div id="kratos-page">
+        <div id="kratos-header">
+            <header id="kratos-desktop-topnav" class="kratos-topnav">
+                <div class="container">
+                    <div class="nav-header">
+                        <nav id="kratos-menu-wrap">
+                            <ul id="kratos-primary-menu" class="sf-menu">
+                                
+                                    
+                                        <li>
+                                            
+                                                <a href="/">
+                                            
+                                                
+                                                    <i class="fa fa-home"></i>
+                                                
+                                                Home
+                                            </a>
+                                            
+                                        </li>
+                                    
+                                        <li>
+                                            
+                                                <a href="/archives/">
+                                            
+                                                
+                                                    <i class="fa fa-file"></i>
+                                                
+                                                Archives
+                                            </a>
+                                            
+                                        </li>
+                                    
+                                        <li>
+                                            
+                                                <a href="/about/">
+                                            
+                                                
+                                                    <i class="fa fa-paper-plane"></i>
+                                                
+                                                About Me
+                                            </a>
+                                            
+                                        </li>
+                                    
+                                
+                            </ul>
+                        </nav>
+                    </div>
+                </div>
+            </header>
+            <header id="kratos-mobile-topnav" class="kratos-topnav">
+                <div class="container">
+                    <div class="color-logo"><a href="/">Mr.W&#39;s Blog</a></div>
+                    <div class="nav-toggle">
+                        <a class="kratos-nav-toggle js-kratos-nav-toggle">
+                            <i></i>
+                        </a>
+                    </div>
+                </div>
+            </header>
+        </div>
+        <div class="kratos-start kratos-hero-2">
+            <!-- <div class="kratos-overlay"></div> -->
+            <div class="kratos-cover kratos-cover-2 text-center">
+                <div class="desc desc2 animate-box">
+                    <a href="/">
+                        <h2>Mr.W&#39;s Blog</h2> <br />
+                        <span></span>
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <div id="kratos-blog-post">
+            <div class="container">
+                <div id="main" class="row">
+                    
+
+        
+
+            <section class="col-md-8">
+
+        
+
+            <article itemscope itemtype="https://schema.org/Article">
+    
+    <link itemprop="mainEntityOfPage" href="https://gdmrw.github.io/posts/middlebox-traffic-analysis/">
+    <div class="kratos-hentry kratos-post-inner clearfix">
+        <header class="kratos-entry-header">
+            
+                <h1 class="kratos-entry-title text-center" itemprop="name headline">How Middleboxs Identify Proxy Traffics</h1>
+            
+            
+            <ul class="kratos-post-meta text-center">
+                <li><time datetime="2022-10-22T15:36:11.000Z" itemprop="datePublished"><i class="fa fa-calendar"></i> 2022-10-22</time></li>
+                <li itemprop="author" itemscope itemtype="https://schema.org/Person">
+                    <i class="fa fa-user"></i> author <span itemprop="name">Coia</span>
+                </li>
+                <li>
+                    <i class="fa fa-edit"></i> 
+                    
+                    
+                        ~5.26K
+                    
+                    words
+                </li>
+                
+            </ul>
+        </header>
+        <div class="kratos-post-content">
+            
+            <div id="expire-alert" class="alert alert-warning hidden" role="alert">
+                <div class="icon"><i class="fa fa-warning"></i></div>
+                <div class="text"><p>This article was last editied in <time datetime="1666502466427"></time>, some of its contents may need update.</p></div>
+            </div>
+            
+            
+            
+                <div class="kratos-post-inner-toc toc-div-class" >
+                    <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#Abstract"><span class="toc-number">1.</span> <span class="toc-text">Abstract</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#Common-attack-made-by-middle-box"><span class="toc-number">1.1.</span> <span class="toc-text">Common attack made by middle box</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Some-obvious-charecteristics-of-proxy-traffic"><span class="toc-number">1.2.</span> <span class="toc-text">Some obvious charecteristics of proxy traffic.</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#TLS-traffic-risk-analysis"><span class="toc-number">1.3.</span> <span class="toc-text">TLS traffic risk analysis</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Report-New-detection-method-that-capable-to-detect-Fake-TLS-traffic"><span class="toc-number">1.4.</span> <span class="toc-text">Report: New detection method that  capable to detect Fake TLS traffic</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#New-measure-to-detect-client"><span class="toc-number">1.5.</span> <span class="toc-text">New measure to detect client</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#How-PoC-identify-the-Shadow-TLS-v2"><span class="toc-number">1.6.</span> <span class="toc-text">How PoC identify the Shadow TLS v2</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Currently-recommend-proxy-protocol"><span class="toc-number">1.7.</span> <span class="toc-text">Currently recommend proxy protocol</span></a></li></ol></li></ol>
+                </div>
+            
+            <hr />
+            <div itemprop="articleBody"><h1 id="Abstract"><a href="#Abstract" class="headerlink" title="Abstract"></a>Abstract</h1><p>There is no absolute safe disguise, all protocols have risks of detected. </p>
+<h2 id="Common-attack-made-by-middle-box"><a href="#Common-attack-made-by-middle-box" class="headerlink" title="Common attack made by middle box"></a>Common attack made by middle box</h2><ul>
+<li><p>Passive analysis (Traffic characteristic, PoC vulnerability)<br>Usually use for plain text protocol or TLS handshake.</p>
+</li>
+<li><p>Active analysis<br>Usually use for Shadowsocks, V2Ray, TLS v1.3 (obtian svers’s SSL certificate)</p>
+</li>
+<li><p>replay package</p>
+</li>
+</ul>
+<h2 id="Some-obvious-charecteristics-of-proxy-traffic"><a href="#Some-obvious-charecteristics-of-proxy-traffic" class="headerlink" title="Some obvious charecteristics of proxy traffic."></a>Some obvious charecteristics of proxy traffic.</h2><ul>
+<li><p>Long connection<br>Most HTTP traffic is short connection.</p>
+</li>
+<li><p>bidireaction flow<br>99% of Web traffic(HTTP) is one-way flow, which is a group of request match a group of response, few website use websocket.</p>
+</li>
+<li><p>High traffic<br>Lack of reasons to justify large traffic.</p>
+</li>
+<li><p>High connection numbers<br>Normally a website will only create one websocket connection, hard to explain why there are 20-30 connections existed. </p>
+</li>
+<li><p>Point to point<br>IP to IP, high encryption, high traffic, thus —- high suspiciousness</p>
+</li>
+</ul>
+<p>Those charecteristics are always exist in proxy protocols, it will be hard to erase. </p>
+<h2 id="TLS-traffic-risk-analysis"><a href="#TLS-traffic-risk-analysis" class="headerlink" title="TLS traffic risk analysis"></a>TLS traffic risk analysis</h2><ul>
+<li>ClientHello</li>
+</ul>
+<p>TLS ClientHello have <a target="_blank" rel="noopener" href="https://fingerprint.com/blog/what-is-tls-fingerprinting-transport-layer-security/">fingerprint</a></p>
+<p>If access website using programs default fingerprint(for example: Go TLS) and match the features above. The risk that will be recongized by proxy will be high. </p>
+<blockquote>
+<p>Iran firewall will reject curl and wget fingerprint request for non-whitelist, Go TLS and browsers fingerprint will be allowed.<br>Recommende to connect by using browser’s fingerprint. (Go project <a target="_blank" rel="noopener" href="https://github.com/refraction-networking/utls">uTLS</a>)<br>Note: this repository is disrepair and the chrome fingerprint remain at Chrome 83, it may be a risk.<br>A changable option of the above is <a target="_blank" rel="noopener" href="https://gitlab.com/CoiaPrant/tls">here</a> , Chrome 104 fingerprint is currently added. </p>
+</blockquote>
+<ul>
+<li><p>Server Name Idication (SNI)<br>Highest risk for free domains, cheap domains will also contain risk. </p>
+</li>
+<li><p>TLS connection version<br>TlS v1.3 has the highest risk, all contents after the Server Hello will be all encrypted, middlebox need active detection to obtain server certificate.</p>
+</li>
+</ul>
+<p>TLS v1.2 will be considered as median risk. All certificates exchange will be in plain text, middle box can verify it through intercept traffic. </p>
+<p>SSL v3&#x2F;TLS v1.0&#x2F;TLS v1.1 have the lowest risk , there is few traffic here, in other words, fewer sample. However, using out-dated encryption have risk of being attacked, not recommended. </p>
+<ul>
+<li>TLS server certificate</li>
+</ul>
+<p>Self-signed certificate have the highest risk.<br>Second are cloudflare certificate and Let’s Encrypt because they are free. </p>
+<blockquote>
+<p>Almost no people will spent hunders of dollars on certificate.</p>
+</blockquote>
+<h2 id="Report-New-detection-method-that-capable-to-detect-Fake-TLS-traffic"><a href="#Report-New-detection-method-that-capable-to-detect-Fake-TLS-traffic" class="headerlink" title="Report: New detection method that  capable to detect Fake TLS traffic"></a>Report: New detection method that  capable to detect Fake TLS traffic</h2><p><strong>Analysis</strong><br>Both MTPRoto FakeTLS and Shadow TLS(v1&#x2F;v2) are simulate a TLS handshake with trusted certificate to circumvent whitelist. Both two protocols are nearly perfect, they can be verified as valid client while handshake. </p>
+<ul>
+<li><p>How to verify client of MTProto FakeTLS<br>ClientHello package remove ramdom field and make a whole package for hmac, key will be secret, also use the hmac on sevrer to verify client, random have one-time processing, it will fallback to real web server if failed. </p>
+<blockquote>
+<p> Indentification method: TLS handshake of MTProto not standardize, firewall can intercept the hostCert package and judge the length.  The lenght of hostCert will be ramdon, between 1024-4096 bit. (<a target="_blank" rel="noopener" href="https://github.com/9seconds/mtg/tree/master/mtglib/internal/faketls">mtg-faketls</a>)</p>
+</blockquote>
+</li>
+<li><p>Shadow TLS v1 won’t verify client</p>
+<blockquote>
+<p>Identification method: send a request to the sever through curl, curl will failed. </p>
+</blockquote>
+</li>
+<li><p>How Shadow TLS v2 verify client<br>After client request, sever will return the orgin data as challenge response and use password to hmac. The server can verif the client using same hmac.<br>Due to the return data have randomness and can also achieve one-time verification, middlebox can not react the challenge response if they don’t have password, hence, it will be more safer compare with MTproto handshake.</p>
+</li>
+</ul>
+<h2 id="New-measure-to-detect-client"><a href="#New-measure-to-detect-client" class="headerlink" title="New measure to detect client"></a>New measure to detect client</h2><p>Most protocols security are based on server verify the client, but the client will not verify sever’s validity.<br>In other words, one-way authentication<br>Firewall can detect the server reaction by using fake server package. Using reverse dectection to check if the clients are real browser </p>
+<blockquote>
+<p>MTProto use hmac algorithm in ServerHello and will not affected by this measure. </p>
+</blockquote>
+<h2 id="How-PoC-identify-the-Shadow-TLS-v2"><a href="#How-PoC-identify-the-Shadow-TLS-v2" class="headerlink" title="How PoC identify the Shadow TLS v2"></a>How PoC identify the Shadow TLS v2</h2><blockquote>
+<p>protocol desigin <a target="_blank" rel="noopener" href="https://github.com/ihciah/shadow-tls/blob/master/docs/protocol-cn.md">Github docs</a><br>Firewall will intercept a normal TCP connection randomly. After they get TLS ClientHello, they will hijack the request content’s SNI field to real SNI server. After the TLS handshake finished, client of Shadow TLS will incert server’s challenge response 8 bit before the Application Data. </p>
+</blockquote>
+<p>At this moment, because the opposite side is a real real TLS server, handshake with Shadow TLS client will be successful. But afer the hmac sent, server will drop an Alert(Encrypted Application Data) bacause it is not a negotiated TLS encryption. After that, the server will FIN or RST the TCP connection, at this time the ShadowTLS will be identified and can be block by ip precisely. </p>
+<blockquote>
+<p>Proxy procotols will normally use multi connection. Middlebox can precisely identify the client by merely pick one of those connection. </p>
+</blockquote>
+<h2 id="Currently-recommend-proxy-protocol"><a href="#Currently-recommend-proxy-protocol" class="headerlink" title="Currently recommend proxy protocol"></a>Currently recommend proxy protocol</h2><ul>
+<li>Hystertia, TUIC(QUIC)<br>The firewall does not block or interfere with QUIC, so you can use it with confidence.</li>
+</ul>
+<div class="alert alert-info"><div class="icon"><i class="fa fa-info"></i></div><div class="text"><p>This article is translate from <a target="_blank" rel="noopener" href="https://telegra.ph/%E6%8A%A5%E5%91%8A-%E4%B8%AD%E9%97%B4%E7%9B%92%E5%A6%82%E4%BD%95%E8%AF%86%E5%88%AB%E4%BB%A3%E7%90%86%E6%B5%81%E9%87%8F-10-17">Coia channel</a> , some emotional expressions have been deleted. This article not represent personal opinion</p>
+</div></div>
+</div>
+        </div>
+        
+        <footer class="kratos-entry-footer clearfix">
+            
+            <div class="footer-tag clearfix">
+                <div class="pull-left">
+                <i class="fa fa-tags"></i>
+                    <a class="tag-none-link" href="/tags/http/" rel="tag">http</a>, <a class="tag-none-link" href="/tags/tls/" rel="tag">tls</a>
+                </div>
+                <div class="pull-date">
+                    <time datetime="2022-10-23T05:21:06.427Z" itemprop="dateModified">last modify2022-10-23</time>
+                </div>
+            </div>
+        </footer>
+    </div>
+    
+        <nav class="navigation post-navigation clearfix" role="navigation">
+            
+            <div class="nav-previous clearfix">
+                <a title=" Nginx pid error fix" href="/posts/nginx-pid-error/">&lt; Previous</a>
+            </div>
+            
+            
+            <div class="nav-next clearfix">
+                <a title=" Failure" href="/posts/failure/">Next &gt;</a>
+            </div>
+            
+        </nav>
+    
+    
+</article>
+
+        
+
+            </section>
+
+        
+
+                
+            
+
+<section id="kratos-widget-area" class="col-md-4 hidden-xs hidden-sm">
+    <!-- 文章和页面根据splitter来分割，没有的话就从头开始设置为sticky -->
+    
+    
+                <aside id="krw-about" class="widget widget-kratos-about clearfix">
+    <div class="photo-background"></div>
+    <div class="photo-wrapper clearfix">
+        <div class="photo-wrapper-tip text-center">
+            <img class="about-photo" src="/images/MW.png" loading="lazy" decoding="auto" />
+        </div>
+    </div>
+    <div class="textwidget">
+        <p class="text-center">Across the Great Wall, <br /> we can reach every coner in the world </p></p>
+    </div>
+    <div class="site-meta">
+        <a class="meta-item" href="/archives/">
+            <span class="title">
+                post
+            </span>
+            <span class="count">
+                7
+            </span>
+        </a>
+        <a class="meta-item" href="/categories/">
+            <span class="title">
+                category
+            </span>
+            <span class="count">
+                1
+            </span>
+        </a>
+        <a class="meta-item" href="/tags/">
+            <span class="title">
+                tag
+            </span>
+            <span class="count">
+                6
+            </span>
+        </a>
+    </div>
+</aside>
+            
+                    <div class="sticky-area">
+                
+                    <aside id="krw-toc" class="widget widget-kratos-toc clearfix toc-div-class" >
+    <div class="photo-background"></div>
+    <h4 class="widget-title no-after">
+        <i class="fa fa-compass"></i>
+        article catalog
+        <span class="toc-progress-bar" role="progressbar" aria-label="阅读进度："></span>
+    </h4>
+    <div class="textwidget">
+        <ol class="toc"><li class="toc-item toc-level-1"><a class="toc-link" href="#Abstract"><span class="toc-text">Abstract</span></a><ol class="toc-child"><li class="toc-item toc-level-2"><a class="toc-link" href="#Common-attack-made-by-middle-box"><span class="toc-text">Common attack made by middle box</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Some-obvious-charecteristics-of-proxy-traffic"><span class="toc-text">Some obvious charecteristics of proxy traffic.</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#TLS-traffic-risk-analysis"><span class="toc-text">TLS traffic risk analysis</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Report-New-detection-method-that-capable-to-detect-Fake-TLS-traffic"><span class="toc-text">Report: New detection method that  capable to detect Fake TLS traffic</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#New-measure-to-detect-client"><span class="toc-text">New measure to detect client</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#How-PoC-identify-the-Shadow-TLS-v2"><span class="toc-text">How PoC identify the Shadow TLS v2</span></a></li><li class="toc-item toc-level-2"><a class="toc-link" href="#Currently-recommend-proxy-protocol"><span class="toc-text">Currently recommend proxy protocol</span></a></li></ol></li></ol>
+    </div>
+</aside>
+                
+                
+  <aside id="krw-categories" class="widget widget-kratos-categories clearfix">
+    <h4 class="widget-title"><i class="fa fa-folder"></i>Categories list</h4>
+      <ul class="category-list"><li class="category-list-item"><a class="category-list-link" href="/categories/Tutorial/">Tutorial</a><span class="category-list-count">1</span></li></ul>
+  </aside>
+
+
+            
+                
+  <aside id="krw-tags" class="widget widget-kratos-tags clearfix">
+    <h4 class="widget-title"><i class="fa fa-tags"></i>tagcloud</h4>
+      <div class="tag-clouds">
+        <a href="/tags/http/" style="font-size: 0.6em;">http</a> <a href="/tags/linux/" style="font-size: 0.8em;">linux</a> <a href="/tags/network/" style="font-size: 0.6em;">network</a> <a href="/tags/nginx/" style="font-size: 0.8em;">nginx</a> <a href="/tags/shell/" style="font-size: 0.8em;">shell</a> <a href="/tags/tls/" style="font-size: 0.6em;">tls</a>
+      </div>
+  </aside>
+
+            
+                
+  <aside id="krw-posts" class="widget widget-kratos-posts">
+  <h4 class="widget-title"><i class="fa fa-file"></i>Recent post</h4>
+  <div class="tab-content">
+      <ul class="list-group">
+        
+        
+          
+          
+            <a class="list-group-item" href="/posts/failure/"><i class="fa  fa-book"></i> Failure</a>
+            
+          
+        
+          
+          
+            <a class="list-group-item" href="/posts/middlebox-traffic-analysis/"><i class="fa  fa-book"></i> How Middleboxs Identify Proxy Traffics</a>
+            
+          
+        
+          
+          
+            <a class="list-group-item" href="/posts/nginx-pid-error/"><i class="fa  fa-book"></i> Nginx pid error fix</a>
+            
+          
+        
+          
+          
+            <a class="list-group-item" href="/posts/security-blog-configure/"><i class="fa  fa-book"></i> Some simple security configuration I made for Mr.W's Blog</a>
+            
+          
+        
+          
+          
+            <a class="list-group-item" href="/posts/function-test/"><i class="fa  fa-book"></i> Function Test</a>
+            
+          
+        
+          
+            
+          
+            
+      </ul>
+  </div>
+  </aside>
+
+            
+    </div>
+</section>
+        
+        </div>
+    </div>
+</div>
+<footer>
+    <div id="footer"  >
+        <div class="container">
+            <div class="row">
+                <div class="col-md-6 col-md-offset-3 footer-list text-center">
+                    <ul class="kratos-social-icons">
+                        
+                        <li><a href="mailto:gdmr_w@outlook.com"><i class="fa fa-envelope"></i></a></li>
+                        
+                        
+                        
+                        
+                        
+                        <li><a target="_blank" rel="nofollow" href="https://github.com/gdmrw"><i class="fa fa-github"></i></a></li>
+                        
+                    </ul>
+                    <ul class="kratos-copyright">
+
+                        <div>
+                            <li>Thanks <a href="https://github.com/Candinya/Kratos-Rebirth" target="_blank">Kratos Theme</a></li>
+                            
+                        </div>
+                        <div>
+                            <li>Powered by <a href="https://hexo.io" target="_blank" rel="nofollow">Hexo</a></li>
+                            <li>Hosted on <a href="https://github.io" target="_blank">Github Pages</a></li>
+                        </div>
+                        <div>
+                            
+                            
+                        </div>
+                    </ul>
+                </div>
+            </div>
+        </div>
+        <div class="kr-tool text-center">
+            <div class="tool">
+                
+                    <div class="box search-box">
+                        <a href="/search/">
+                            <span class="fa fa-search"></span>
+                        </a>
+                    </div>
+                
+                
+                    <div class="box theme-box" id="darkmode-switch">
+                        <span class="fa fa-adjust"></span>
+                    </div>
+                
+                
+            </div>
+            <div class="box gotop-box">
+                <span class="fa fa-chevron-up"></span>
+            </div>
+        </div>
+    </div>
+</footer>
+</div>
+</div>
+
+        <script defer src="/vendors/bootstrap@3.3.4/dist/js/bootstrap.min.js"></script>
+<script defer src="/vendors/nprogress@0.2.0/nprogress.js"></script>
+<script>
+    if (!window.kr) {
+        window.kr = {};
+    }
+    window.kr.notMobile = (!(navigator.userAgent.match(/(phone|pad|pod|iPhone|iPod|ios|iPad|Android|Mobile|BlackBerry|IEMobile|MQQBrowser|JUC|Fennec|wOSBrowser|BrowserNG|WebOS|Symbian|Windows Phone)/i)));
+    window.kr.siteRoot = "/";
+</script>
+
+
+    <script async src="/js/false.min.js"></script>
+
+
+
+
+    <script defer src="/vendors/@fancyapps/fancybox@3.5.7/dist/jquery.fancybox.min.js"></script>
+
+<script defer src="/vendors/clipboard@2.0.6/dist/clipboard.min.js"></script>
+<script defer src="/js/kratosr.min.js"></script>
+<script defer src="/js/pjax.min.js"></script>
+
+
+
+<!-- Extra support for third-party plguins  -->
+
+
+    </body>
+</html>
